@@ -9,6 +9,35 @@ app = Flask(__name__, template_folder=os.path.join(os.path.dirname(__file__), 't
 
 
 
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.dialects.postgresql import JSON
+
+# Вставьте сюда ВАШУ длинную ссылку из Supabase (заменив [ваш_пароль] на реальный пароль)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres.xxx:ваш_пароль@://supabase.com'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+db = SQLAlchemy(app)
+
+class GameState(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    game_data = db.Column(JSON, nullable=False)
+
+with app.app_context():
+    db.create_all()
+    if not GameState.query.first():
+        initial_data = {
+            "clay": 0.0,
+            "coins": 0.0,
+            "current_tool": "Hands",
+            "tool_durability": 0,
+            "helpers": {
+                "trainee": [],
+                "foreman": []
+            }
+        }
+
+        db.session.add(GameState(game_data=initial_data))
+        db.session.commit()
 
 DATA_FILE = 'game_data.json'
 
@@ -26,24 +55,14 @@ DEFAULT_DATA = {
 
 
 def load_data():
-    """Загрузка данных из JSON файла."""
-    if not os.path.exists(DATA_FILE):
-        return DEFAULT_DATA.copy()
-    try:
-        with open(DATA_FILE, 'r', encoding='utf-8') as f:
-            data = json.load(f)
-            # Проверяем структуру на случай старых версий файла
-            if "helpers" not in data:
-                data["helpers"] = {"trainee": [], "foreman": []}
-            return data
-    except Exception:
-        return DEFAULT_DATA.copy()
-
+    state = GameState.query.first()
+    return state.game_data
 
 def save_data(data):
-    """Сохранение данных в JSON файл."""
-    with open(DATA_FILE, 'w', encoding='utf-8') as f:
-        json.dump(data, f, ensure_ascii=False, indent=4)
+    state = GameState.query.first()
+    db.session.query(GameState).filter_by(id=state.id).update({"game_data": data})
+    db.session.commit()
+
 
 
 def update_idle_income(data):
