@@ -10,6 +10,7 @@ app = Flask(__name__, template_folder=os.path.join(os.path.dirname(__file__), 't
 
 
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import text
 from sqlalchemy.dialects.postgresql import JSON
 
 # Вставьте сюда ВАШУ длинную ссылку из Supabase (заменив [ваш_пароль] на реальный пароль)
