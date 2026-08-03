@@ -4,7 +4,8 @@ import time
 import random
 from flask import Flask, render_template, jsonify, request
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder='ВЕК/templates')
+
 
 DATA_FILE = 'game_data.json'
 
