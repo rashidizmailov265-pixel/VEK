@@ -1,0 +1,10 @@
+{
+    "clay": 5.0,
+    "coins": 47.0,
+    "current_tool": "Hands",
+    "tool_durability": 0,
+    "helpers": {
+        "trainee": [],
+        "foreman": []
+    }
+}

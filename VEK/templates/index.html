@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VEK 👑</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #2c1d11;
+            color: #f5ebe0;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+            /* Запрещаем выделение текста при частых тапах на телефоне Мариам */
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #3d2b1f;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.5);
+            border: 2px solid #8d5b4c;
+        }
+        h1 { color: #d4a373; margin-bottom: 5px; }
+        .subtitle { color: #a98467; font-style: italic; margin-bottom: 25px; }
+        .stat-box {
+            background-color: #4e3629;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 18px;
+            border: 1px solid #634434;
+        }
+        .stat-line { margin: 8px 0; }
+        .highlight { font-weight: bold; color: #f2e9e4; font-size: 22px; }
+        .coin-highlight { color: #f4a261; font-weight: bold; font-size: 22px; }
+
+        .btn-dig {
+            background-color: #e76f51;
+            color: white;
+            border: none;
+            padding: 20px 40px;
+            font-size: 22px;
+            font-weight: bold;
+            border-radius: 12px;
+            cursor: pointer;
+            box-shadow: 0 6px #b54f38;
+            transition: all 0.1s ease;
+            width: 100%;
+            margin-bottom: 25px;
+            text-transform: uppercase;
+        }
+        .btn-dig:active {
+            box-shadow: 0 2px #b54f38;
+            transform: translateY(4px);
+        }
+
+        .market-section, .shop-section {
+            background-color: #4a3525;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            text-align: left;
+            border: 1px solid #5c422f;
+        }
+        h3 { margin-top: 0; color: #e9c46a; border-bottom: 1px solid #5c422f; padding-bottom: 5px; }
+        .shop-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 12px 0;
+            padding-bottom: 8px;
+            border-bottom: 1px dashed #5c422f;
+        }
+        .shop-item:last-child { border-bottom: none; }
+        .btn-buy, .btn-sell {
+            background-color: #2a9d8f;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .btn-buy:hover, .btn-sell:hover { background-color: #264653; }
+
+        .btn-reset {
+            background-color: #e63946;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin-top: 30px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            opacity: 0.7;
+        }
+        .btn-reset:hover { opacity: 1; }
+
+        .easter-egg-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.6);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        .easter-egg-box {
+            background: linear-gradient(135deg, #ffe066 0%, #f5b041 100%);
+            color: #4a3525;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 0 30px #f4d03f;
+            border: 5px solid #fff;
+            max-width: 450px;
+            cursor: pointer;
+            transform: scale(0.7);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .easter-egg-box h2 { margin-top: 0; font-size: 28px; }
+        .easter-egg-box p { font-size: 20px; font-weight: bold; line-height: 1.4; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>VEK ⛏️</h1>
+    <div class="subtitle">Специально для любимой Мариам</div>
+
+    <div class="stat-box">
+        <div class="stat-line">Сырая глина (норы): <span id="clay-display" class="highlight">0</span> шт.</div>
+        <div class="stat-line">Баланс: <span id="coins-display" class="coin-highlight">0</span> Кротокоинов</div>
+    </div>
+
+    <button class="btn-dig" id="dig-button">КОПАТЬ ЗЕМЛЮ!</button>
+
+    <div style="margin-bottom: 20px; font-size: 15px; color: #ccb7a3;">
+        Инструмент: <span id="tool-name" style="font-weight:bold; color:#e9c46a;">Руки</span>
+        <span id="tool-durability"></span>
+    </div>
+
+    <div class="market-section">
+        <h3>Кротовий Рынок</h3>
+        <div class="shop-item">
+            <span>Обменять глину на Кротокоины (10 глины = 1 коин)</span>
+            <button class="btn-sell" id="sell-button">Сдать глину</button>
+        </div>
+    </div>
+    <div class="shop-section">
+        <h3>Инструменты в лавке</h3>
+        <div class="shop-item">
+            <div>
+                <strong>Обычная лопата</strong> (+2 к клику, 30 прочности)<br>
+                <small style="color:#b79a83;">Цена: 5 Кротокоинов</small>
+            </div>
+            <button class="btn-buy" onclick="buyItem('shovel')">Купить</button>
+        </div>
+        <div class="shop-item">
+            <div>
+                <strong>Супер-Бур</strong> (+5 к клику, 50 прочности)<br>
+                <small style="color:#b79a83;">Цена: 25 Кротокоинов</small>
+            </div>
+            <button class="btn-buy" onclick="buyItem('drill')">Купить</button>
+        </div>
+    </div>
+
+    <div class="shop-section">
+        <h3>Наемные кроты-рабочие</h3>
+        <div class="shop-item">
+            <div>
+                <strong>Крот-Стажер</strong> (+1 глина/сек на 120 сек)<br>
+                <small style="color:#b79a83;">Цена: 10 Кротокоинов. Активно: <span id="trainees-count">0</span></small>
+            </div>
+            <button class="btn-buy" onclick="buyItem('trainee')">Нанять</button>
+        </div>
+        <div class="shop-item">
+            <div>
+                <strong>Крот-Бригадир</strong> (+5 глина/сек на 180 сек)<br>
+                <small style="color:#b79a83;">Цена: 50 Кротокоинов. Активно: <span id="foremen-count">0</span></small>
+            </div>
+            <button class="btn-buy" onclick="buyItem('foreman')">Нанять</button>
+        </div>
+    </div>
+
+    <button class="btn-reset" id="reset-button">Начать копать заново</button>
+</div>
+
+<div class="easter-egg-overlay" id="easter-egg-screen">
+    <div class="easter-egg-box" id="easter-egg-box">
+        <h2>👑</h2>
+        <p>Госпожа Мариам гордится вашей работой!</p>
+        <div style="font-size: 13px; margin-top: 15px; opacity: 0.8;">(Кликните, чтобы закрыть)</div>
+    </div>
+</div>
+
+<script>
+    let lastCheckedMilestone = 0;
+
+    function updateUI(data) {
+        document.getElementById('clay-display').innerText = data.clay;
+        document.getElementById('coins-display').innerText = data.coins;
+
+        let toolName = "Руки";
+        let durabilityText = "";
+        if (data.current_tool === "Shovel") {
+            toolName = "Обычная лопата";
+            durabilityText = `(🔨 ${data.tool_durability} / 30)`;
+        } else if (data.current_tool === "Drill") {
+            toolName = "Супер-Бур";
+            durabilityText = `(⚡ ${data.tool_durability} / 50)`;
+        }
+        document.getElementById('tool-name').innerText = toolName;
+        document.getElementById('tool-durability').innerText = durabilityText;
+
+        document.getElementById('trainees-count').innerText = data.trainees_left.length;
+        document.getElementById('foremen-count').innerText = data.foremen_left.length;
+
+        checkEasterEgg(data.coins);
+    }
+
+    function loadGameState() {
+        fetch('/api/state')
+            .then(response => response.json())
+            .then(data => {
+                if (lastCheckedMilestone === 0 && data.coins >= 15) {
+                    lastCheckedMilestone = Math.floor(data.coins / 15) * 15;
+                }
+                updateUI(data);
+            });
+    }
+
+    document.getElementById('dig-button').addEventListener('click', () => {
+        fetch('/api/dig', { method: 'POST' })
+            .then(response => response.json())
+            .then(() => {
+                loadGameState();
+            });
+    });
+
+    document.getElementById('sell-button').addEventListener('click', () => {
+        fetch('/api/sell', { method: 'POST' })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'error') {
+                    alert(data.message);
+                }
+                loadGameState();
+            });
+    });
+
+    function buyItem(itemName) {
+        fetch('/api/buy', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ item: itemName })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'error') {
+                alert(data.message);
+            }
+            loadGameState();
+        });
+    }
+
+    document.getElementById('reset-button').addEventListener('click', () => {
+        if (confirm('Вы уверены, что хотите сбросить весь прогресс до нуля?')) {
+            fetch('/api/reset', { method: 'POST' })
+                .then(response => response.json())
+                .then(() => {
+                    lastCheckedMilestone = 0;
+                    loadGameState();
+                });
+        }
+    });
+
+    setInterval(() => {
+        fetch('/api/tick', { method: 'POST' })
+            .then(response => response.json())
+            .then(() => {
+                loadGameState();
+            });
+    }, 1000);
+
+    function checkEasterEgg(currentCoins) {
+        if (currentCoins >= 15) {
+            let currentMilestone = Math.floor(currentCoins / 15) * 15;
+            if (currentMilestone > lastCheckedMilestone) {
+                lastCheckedMilestone = currentMilestone;
+                showEasterEgg();
+            }
+        }
+    }
+
+    function showEasterEgg() {
+        const overlay = document.getElementById('easter-egg-screen');
+        const box = document.getElementById('easter-egg-box');
+        overlay.style.display = 'flex';
+        setTimeout(() => {
+            overlay.style.opacity = '1';
+            box.style.transform = 'scale(1)';
+        }, 10);
+    }
+
+    document.getElementById('easter-egg-screen').addEventListener('click', () => {
+        const overlay = document.getElementById('easter-egg-screen');
+        const box = document.getElementById('easter-egg-box');
+        overlay.style.opacity = '0';
+        box.style.transform = 'scale(0.7)';
+        setTimeout(() => {
+            overlay.style.display = 'none';
+        }, 500);
+    });
+
+    window.onload = loadGameState;
+</script>
+</body>
+</html>
