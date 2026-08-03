@@ -14,7 +14,7 @@ from sqlalchemy import text
 from sqlalchemy.dialects.postgresql import JSON
 
 # Вставьте сюда ВАШУ длинную ссылку из Supabase (заменив [ваш_пароль] на реальный пароль)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:MyVekGamePass123@db.ahdwufipqpwdhwozzrp.supabase.co:5432/postgres'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres.ahdwufipqpkwdhwozzrp:MyVekGamePass123@aws-0-eu-west-1.pooler.supabase.com:6543/postgres'
 
 db = SQLAlchemy(app)
 
