@@ -4,7 +4,9 @@ import time
 import random
 from flask import Flask, render_template, jsonify, request
 
-app = Flask(__name__, template_folder='VEK/templates')
+import os
+app = Flask(__name__, template_folder=os.path.join(os.path.dirname(__file__), 'templates'))
+
 
 
 
